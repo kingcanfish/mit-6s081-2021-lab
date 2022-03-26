@@ -30,6 +30,8 @@ int main(int argc, char  *argv[]) {
                 idx = 0;
             }else if (buff == '\n') {
                 cache[start][idx] = '\0';
+                // 为什么是start+2 ？ start是最后一个 索引 所以长度是start+1 但是需要额外的一个位置
+                // 存放argv的 结束 NULL 所以是start+2
                 char * new_arg[start+2];
                 for (int i = 0 ; i < start+1;i++) {
                     new_arg[i] = cache[i];
