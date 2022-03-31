@@ -289,6 +289,8 @@ fork(void)
   }
   np->sz = p->sz;
 
+  np->mask = p->mask;
+
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
@@ -653,4 +655,15 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+// free_proc_sum 回返 not used的proc数目
+uint64 free_proc_sum(void) {
+  uint64 num = 0;
+  for (int i = 0; i < NPROC;i++) {
+    if (proc[i].state != UNUSED) {
+      num ++;
+    }
+  }
+  return num;
 }
