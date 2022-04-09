@@ -80,7 +80,36 @@ sys_sleep(void)
 int
 sys_pgaccess(void)
 {
+  
+  
   // lab pgtbl: your code here.
+  struct proc *  p= myproc();
+  uint64 init_page_ptr;
+  int npage;
+  uint64 user_addr;
+  argaddr(0, &init_page_ptr);
+  argint(1, &npage);
+  argaddr(2, &user_addr);
+
+  if (npage > 64) {
+    return -1;
+  }
+
+  uint64 bitmap = 0;
+  uint64 mask = 1;
+  uint64 clean = ~PTE_A;
+
+
+  for (int i = 0 ; i < npage; i++) {
+    uint page = init_page_ptr + i *PGSIZE;
+    pte_t * pte = walk(p->pagetable, page, 0);
+    if ((*pte)&PTE_A) {
+      //之前访问过
+      bitmap = bitmap | (mask << i);
+      (*pte) &=clean; // 清除访问位
+    }
+  }
+  copyout(p->pagetable, user_addr, (char *) &bitmap,sizeof(bitmap));
   return 0;
 }
 #endif
@@ -107,3 +136,6 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+
